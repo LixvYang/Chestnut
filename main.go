@@ -3,21 +3,15 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 
-	logging "github.com/ipfs/go-log/v2"
-	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p-peerstore/pstoreds"
-	"github.com/libp2p/go-libp2p/p2p/protocol/ping"
-	"github.com/libp2p/go-tcp-transport"
-	ws "github.com/libp2p/go-ws-transport"
-	"github.com/lixvyang/chestnut/p2p"
+	"github.com/lixvyang/chestnut/utils/cli"
+	"github.com/lixvyang/chestnut/utils/options"
 
-	// pubsub "github.com/libp2p/go-libp2p-pubsub"
-	// multiaddr "github.com/multiformats/go-multiaddr"
-	dsbadger2 "github.com/ipfs/go-ds-badger2"
-	"github.com/libp2p/go-libp2p-core/peerstore"
+	logging "github.com/ipfs/go-log/v2"
+	"github.com/lixvyang/chestnut/p2p"
 )
 
 var (
@@ -26,54 +20,60 @@ var (
 	mainlog      = logging.Logger("main")
 )
 
-func mainRet()  {
-	var pstore peerstore.Peerstore
-	// var ps *pubsub.PubSub
-	ctx := context.Background()
+// mainRet is the main function for the program. It is called from main.
+func mainRet(config cli.Config) int {
+	signalch = make(chan os.Signal, 1)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	ds, err := dsbadger2.NewDatastore("/tmp/badger", &dsbadger2.DefaultOptions)
-	if err != nil {
-		fmt.Errorf("Error creating datastore: %s", err)
-	}
-	
-	libp2poptions := []libp2p.Option{
-		libp2p.NATPortMap(),
-		libp2p.ChainOptions(
-			libp2p.Transport(tcp.NewTCPTransport),
-			libp2p.Transport(ws.New),
-		),
+	peername := config.PeerName
+	if config.IsBootstrap {
+		peername = "bootstrap"
 	}
 
-	if ds != nil {
-		pstore, err = pstoreds.NewPeerstore(ctx, ds, pstoreds.DefaultOpts())
-		if err != nil {
-			fmt.Errorf("Error creating peerstore: %s", err)
-		}
-		libp2poptions = append(libp2poptions, libp2p.Peerstore(pstore))
-	}
-	node, err := libp2p.New(
-		libp2poptions...,
-	)
+	nodeoptions, err := options.GetNodeOptions(config.ConfigDir, peername)
 	if err != nil {
-		panic(err)
+		cancel()
+		mainlog.Fatalf(err.Error())
 	}
-	//config our own ping protocol
-	pingService := &ping.PingService{Host:node}
-	node.SetStreamHandler(ping.ID, pingService.PingHandler)
-	fmt.Println(node)
-	// options := []pubsub.Option{pubsub.WithPeerExchange(true)}
-	// ps, err = pubsub.NewGossipSub(ctx, node, options...)
-	// if err != nil {
-	// 	fmt.Errorf("Error creating pubsub: %s", err)
-	// }
-	
-	if err := node.Close(); err != nil {
-		panic(err)
-	}
+
+
+	return 0
 }
 
 func main()  {
-	
+	help := flag.Bool("h", false, "Display help")
 
-	// mainRet()
+	config, err := cli.ParseFlags()
+	if err != nil {
+		panic(err)
+	}
+
+	if config.IsDebug {
+		logging.SetLogLevel("main", "debug")
+		logging.SetLogLevel("crypto", "debug")
+		logging.SetLogLevel("network", "debug")
+		logging.SetLogLevel("pubsub", "debug")
+		logging.SetLogLevel("autonat", "debug")
+		logging.SetLogLevel("chain", "debug")
+		logging.SetLogLevel("dbmgr", "debug")
+		logging.SetLogLevel("chainctx", "debug")
+		logging.SetLogLevel("group", "debug")
+		logging.SetLogLevel("syncer", "debug")
+		logging.SetLogLevel("producer", "debug")
+		logging.SetLogLevel("user", "debug")
+		logging.SetLogLevel("groupmgr", "debug")
+		logging.SetLogLevel("trxmgr", "debug")
+	}
+
+	if *help {
+		fmt.Println("Output a help ")
+		fmt.Println()
+		fmt.Println("Useage...")
+		flag.PrintDefaults()
+		return
+	}
+
+
+	os.Exit(mainRet(config))
 }
