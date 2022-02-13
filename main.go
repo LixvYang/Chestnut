@@ -4,19 +4,29 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
+	logging "github.com/ipfs/go-log/v2"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p-peerstore/pstoreds"
 	"github.com/libp2p/go-libp2p/p2p/protocol/ping"
 	"github.com/libp2p/go-tcp-transport"
 	ws "github.com/libp2p/go-ws-transport"
+	"github.com/lixvyang/chestnut/p2p"
+
 	// pubsub "github.com/libp2p/go-libp2p-pubsub"
 	// multiaddr "github.com/multiformats/go-multiaddr"
 	dsbadger2 "github.com/ipfs/go-ds-badger2"
 	"github.com/libp2p/go-libp2p-core/peerstore"
 )
 
-func main()  {
+var (
+	node *p2p.Node
+	signalch chan os.Signal
+	mainlog      = logging.Logger("main")
+)
+
+func mainRet()  {
 	var pstore peerstore.Peerstore
 	// var ps *pubsub.PubSub
 	ctx := context.Background()
@@ -60,4 +70,10 @@ func main()  {
 	if err := node.Close(); err != nil {
 		panic(err)
 	}
+}
+
+func main()  {
+	
+
+	// mainRet()
 }
