@@ -9,6 +9,7 @@ import (
 
 	"github.com/lixvyang/chestnut/utils/cli"
 	"github.com/lixvyang/chestnut/utils/options"
+	localcrypto "github.com/lixvyang/chestnut/crypto"
 
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/lixvyang/chestnut/p2p"
@@ -36,6 +37,21 @@ func mainRet(config cli.Config) int {
 		cancel()
 		mainlog.Fatalf(err.Error())
 	}
+
+	signkeycount, err := localcrypto.InitKeystore(config.KeyStoreName, config.KeyStoreDir)
+	ksi := localcrypto.GetKeystore()
+	if err != nil {
+		cancel()
+		mainlog.Fatalf(err.Error())
+	}
+
+	ks, ok := ksi.(*localcrypto.DirKeyStore)
+	if !ok {
+		cancel()
+		mainlog.Fatalf(err.Error())
+	}
+
+	password := os.Getenv("CHESTNUT_PASSWORD")
 
 
 	return 0
