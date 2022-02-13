@@ -2,11 +2,13 @@
 package options
 
 import (
+	"fmt"
+	"path/filepath"
 	"sync"
 
 	logging "github.com/ipfs/go-log/v2"
-	"github.com/spf13/viper"
 	"github.com/lixvyang/chestnut/utils"
+	"github.com/spf13/viper"
 )
 
 var optionlogger = logging.Logger("options")
@@ -102,6 +104,13 @@ func initConfigfile(dir, keyname string) (*viper.Viper, error) {
 	}
 
 	return v, nil
+}
+
+func GetConfigDir() (string, error) {
+	if nodeconfigdir == "" {
+		return "", fmt.Errorf("Please initConfigfile")
+	}
+	return filepath.Abs(nodeconfigdir)
 }
 
 func writeDefaultToconfig(v *viper.Viper) error {

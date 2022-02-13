@@ -2,6 +2,7 @@
 package utils
 
 import (
+	"io"
 	"math/rand"
 	"os"
 
@@ -21,6 +22,16 @@ func EnsureDir(dir string) error {
 	return nil
 }
 
+// FileExist check if file is exist
+func FileExist(path string) bool {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
+
 func DirExist(path string) bool {
 	info, err := os.Stat(path)
 	if os.IsNotExist(err) {
@@ -38,4 +49,19 @@ func GetRandomStr(n int) string {
 		b[i] = letters[rand.Int63()%lettersLength]
 	}
 	return string(b)
+}
+
+// Is DirEmpty check if dir is empty
+func IsDirEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1) // Or f.Readdir(1)
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err //
 }
