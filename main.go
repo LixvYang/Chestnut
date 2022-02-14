@@ -52,7 +52,32 @@ func mainRet(config cli.Config) int {
 	}
 
 	password := os.Getenv("CHESTNUT_PASSWORD")
+	if signkeycount > 0 {
+		if password == "" {
+			password, err = localcrypto.PassphrasePromptForUnlock()
+		}
+		err = ks.Unlock(nodeoptions.SignKeyMap, password)
+		if err != nil {
+			mainlog.Fatalf(err.Error())
+			cancel()
+			return 0
+		}
+	} else {
+		if password == "" {
+			password, err = localcrypto.PassphrasePromptForEncryption()
+			if err != nil {
+				mainlog.Fatalf(err.Error())
+				cancel()
+				return 0
+			}
+			fmt.Println("Please keeping your password safe, We can't recover or reset your password.")
+			fmt.Println("Your password:", password)
+			fmt.Println("After saving the password, press any key to continue.")
+			os.Stdin.Read(make([]byte, 1))
+		}
+	}
 
+	// signkeyhexstr, err := localcrypto.Load
 
 	return 0
 }
