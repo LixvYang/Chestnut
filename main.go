@@ -10,10 +10,13 @@ import (
 	"github.com/lixvyang/chestnut/utils/cli"
 	"github.com/lixvyang/chestnut/utils/options"
 	localcrypto "github.com/lixvyang/chestnut/crypto"
+	ethkeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 
 	logging "github.com/ipfs/go-log/v2"
 	"github.com/lixvyang/chestnut/p2p"
 )
+
+const DEFAULT_KEY_NAME = "default"
 
 var (
 	node *p2p.Node
@@ -75,9 +78,82 @@ func mainRet(config cli.Config) int {
 			fmt.Println("After saving the password, press any key to continue.")
 			os.Stdin.Read(make([]byte, 1))
 		}
+
+		signkeyhexstr, err := localcrypto.LoadEncodeKeyFrom(config.ConfigDir, peername, "txt")
+		if err != nil {
+			cancel()
+			mainlog.Fatalf(err.Error())
+		}
+
+		var addr string
+		if signkeyhexstr != "" {
+			addr, err = ks.Import(DEFAULT_KEY_NAME, signkeyhexstr, localcrypto.Sign, password)
+		} else {
+			addr, err = ks.NewKey(DEFAULT_KEY_NAME, localcrypto.Sign, password)
+			if err != nil {
+				cancel()
+				mainlog.Errorf(err.Error())
+				return 0
+			}
+		}
+
+		if addr == "" {
+			cancel()
+			mainlog.Errorf("Load or create new signkey failed")
+			return 0
+		}
+
+		err = nodeoptions.SetSignKeyMap(DEFAULT_KEY_NAME, addr)
+		if err != nil {
+			cancel()
+			mainlog.Errorf(err.Error())
+			return 0
+		}
+		err = ks.Unlock(nodeoptions.SignKeyMap, password)
+		if err != nil {
+			mainlog.Fatalf(err.Error())
+			cancel()
+			return 0
+		}
+
+		fmt.Printf("load signkey: %d press any key to continue...\n", signkeycount)
+	}
+	_, err = ks.GetKeyFromUnlocked(localcrypto.Sign.NameString(DEFAULT_KEY_NAME))
+	signkeycount = ks.UnlockedKeyCount(localcrypto.Sign)
+	if signkeycount == 0 {
+		mainlog.Fatalf("load signkey error, exit... %s", err)
+		cancel()
+		return 0
 	}
 
-	// signkeyhexstr, err := localcrypto.Load
+	// Load default sign keys
+	key, err := ks.GetKeyFromUnlocked(localcrypto.Sign.NameString(DEFAULT_KEY_NAME))
+
+	defaultkey, ok := key.(*ethkeystore.Key)
+	if !ok {
+		fmt.Println("load default key error, exit...")
+		cancel()
+		mainlog.Errorf(err.Error())
+		return 0
+	}
+
+	keys, err := localcrypto.SignKeytoPeerKeys(defaultkey)
+	if err != nil {
+		cancel()
+		mainlog.Fatalf(err.Error())
+		return 0
+	}
+
+	peerid, ethaddr, err := ks.GetPeerInfo(DEFAULT_KEY_NAME)
+	if err != nil {
+		cancel()
+		mainlog.Fatalf(err.Error())
+	}
+
+	mainlog.Infof("eth address: <%s>", ethaddr)
+
+	
+
 
 	return 0
 }
