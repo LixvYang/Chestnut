@@ -8,6 +8,18 @@ require (
 )
 
 require (
+	github.com/benbjohnson/clock v1.1.0 // indirect
+	github.com/containerd/cgroups v0.0.0-20201119153540-4cbc285b3327 // indirect
+	github.com/coreos/go-systemd/v22 v22.1.0 // indirect
+	github.com/docker/go-units v0.4.0 // indirect
+	github.com/elastic/gosigar v0.12.0 // indirect
+	github.com/godbus/dbus/v5 v5.0.3 // indirect
+	github.com/opencontainers/runtime-spec v1.0.2 // indirect
+	github.com/raulk/clock v1.1.0 // indirect
+	github.com/raulk/go-watchdog v1.2.0 // indirect
+)
+
+require (
 	github.com/DataDog/zstd v1.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
@@ -61,6 +73,7 @@ require (
 	github.com/libp2p/go-libp2p-asn-util v0.1.0 // indirect
 	github.com/libp2p/go-libp2p-autonat v0.7.0 // indirect
 	github.com/libp2p/go-libp2p-blankhost v0.3.0 // indirect
+	github.com/libp2p/go-libp2p-connmgr v0.3.1
 	github.com/libp2p/go-libp2p-core v0.13.0 // indirect
 	github.com/libp2p/go-libp2p-discovery v0.6.0 // indirect
 	github.com/libp2p/go-libp2p-kad-dht v0.15.0 // indirect

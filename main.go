@@ -6,14 +6,16 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
+	"strings"
 
+	ethkeystore "github.com/ethereum/go-ethereum/accounts/keystore"
+	dsbadger2 "github.com/ipfs/go-ds-badger2"
+	logging "github.com/ipfs/go-log/v2"
+	localcrypto "github.com/lixvyang/chestnut/crypto"
+	"github.com/lixvyang/chestnut/p2p"
 	"github.com/lixvyang/chestnut/utils/cli"
 	"github.com/lixvyang/chestnut/utils/options"
-	localcrypto "github.com/lixvyang/chestnut/crypto"
-	ethkeystore "github.com/ethereum/go-ethereum/accounts/keystore"
-
-	logging "github.com/ipfs/go-log/v2"
-	"github.com/lixvyang/chestnut/p2p"
 )
 
 const DEFAULT_KEY_NAME = "default"
@@ -23,6 +25,17 @@ var (
 	signalch chan os.Signal
 	mainlog      = logging.Logger("main")
 )
+
+// reutrn EBUSY if LOCK is exist
+func checkLockError(err error) {
+	if err != nil {
+		errStr := err.Error()
+		if strings.Contains(errStr, "Another process is using this Badger database.") {
+			mainlog.Errorf(errStr)
+			os.Exit(16)
+		}
+	}
+}
 
 // mainRet is the main function for the program. It is called from main.
 func mainRet(config cli.Config) int {
@@ -152,7 +165,16 @@ func mainRet(config cli.Config) int {
 
 	mainlog.Infof("eth address: <%s>", ethaddr)
 
-	
+	ds, err := dsbadger2.NewDatastore(path.Join(config.ConfigDir, fmt.Sprintf("%s-%s", peername, "peerstore")), &dsbadger2.DefaultOptions)
+	checkLockError(err)
+	if err != nil {
+		cancel()
+		mainlog.Fatalf(err.Error())
+	}
+
+	if config.IsBootstrap {
+		
+	}
 
 
 	return 0
