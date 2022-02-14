@@ -113,6 +113,29 @@ func GetConfigDir() (string, error) {
 	return filepath.Abs(nodeconfigdir)
 }
 
+func (opt *NodeOptions) WriteToConfig() error {
+	v, err := initConfigfile(nodeconfigdir, nodepeername)
+	if err != nil {
+		return err
+	}
+
+	v.Set("EnableNat", opt.EnableNat)
+	v.Set("EnableDevNetwork", opt.EnableDevNetwork)
+	v.Set("SignKeyMap", opt.SignKeyMap)
+	v.Set("JWTKey", opt.JWTKey)
+	v.Set("JWTToken", opt.JWTToken)
+	return v.WriteConfig()
+}
+
+
+
+func (opt *NodeOptions) SetSignKeyMap(keyname, addr string) error {
+	opt.mu.Lock()
+	defer opt.mu.Unlock()
+	opt.SignKeyMap[keyname] = addr
+	return opt.WriteToConfig()
+}
+
 func writeDefaultToconfig(v *viper.Viper) error {
 	v.Set("EnableNat", true)
 	v.Set("EnableDevNetwork", false)
