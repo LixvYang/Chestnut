@@ -4,6 +4,10 @@ go 1.17
 
 require (
 	filippo.io/age v1.0.0
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211
+)
+
+require (
 	github.com/DataDog/zstd v1.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
