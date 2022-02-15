@@ -55,6 +55,20 @@ func (node *Node) eventhandler(ctx context.Context) {
 	}
 }
 
+func (node *Node) FindPeers(ctx context.Context, RendezvousString string) ([]peer.AddrInfo, error) {
+	pctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+	var peers []peer.AddrInfo
+	ch, err := node.RoutingDiscovery.FindPeers(pctx, RendezvousString)
+	if err != nil {
+		return nil, err
+	}
+	for pi := range ch {
+		peers = append(peers, pi)
+	}
+	return peers, nil
+}
+
 func (node *Node) AddPeers(ctx context.Context, peers []peer.AddrInfo) int {
 	connectedCount := 0
 	for _, peer := range peers {
@@ -74,4 +88,10 @@ func (node *Node) AddPeers(ctx context.Context, peers []peer.AddrInfo) int {
 		}
 	}
 	return connectedCount
+}
+
+// PeerProtocols returns the protocols supported by the peer.
+func (node *Node) PeersProtocol() *map[string][]string {
+	// protocolpeers := make(map[string][]string)
+	return nil
 }
