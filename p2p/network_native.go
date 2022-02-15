@@ -4,6 +4,8 @@ package p2p
 import (
 	"context"
 	"fmt"
+	"sync"
+	"time"
 
 	ethkeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
@@ -24,6 +26,7 @@ import (
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	tcp "github.com/libp2p/go-tcp-transport"
 	ws "github.com/libp2p/go-ws-transport"
+	"github.com/lixvyang/chestnut/utils/cli"
 	"github.com/lixvyang/chestnut/utils/options"
 	maddr "github.com/multiformats/go-multiaddr"
 )
@@ -167,4 +170,68 @@ func NewNode(ctx context.Context, nodeopt *options.NodeOptions, isBootstrap bool
 	go newnode.eventhandler(ctx)
 
 	return newnode, nil
+}
+
+func (node *Node) Bootstrap(ctx context.Context, config cli.Config) error {
+	var wg sync.WaitGroup
+	for _, peerAddr := range config.BootstrapPeers {
+		peerinfo, _ := peer.AddrInfoFromP2pAddr(peerAddr)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if err := node.Host.Connect(ctx, *peerinfo); err != nil {
+				networklog.Warning(err)
+			} else {
+				networklog.Infof("Connect established with bootstrap node %s:", *peerinfo)
+			}
+		}()
+	}
+	wg.Wait()
+	return nil
+}
+
+func (node *Node) ConnectPeers(ctx context.Context, peerok chan struct{}, maxpeers int, config cli.Config) error {
+	notify := false
+	ticker := time.NewTicker(time.Second * 30)
+	defer ticker.Stop()
+
+	for {
+		select{
+		case <-ctx.Done():
+			return nil
+		case <- ticker.C:
+			//TODO: check peers status and max connect peers
+			connectedCount := 0
+			if notify {
+				peers, err := node.FindPeers(ctx, config.RendezvousString) 
+				if err != nil {
+					return err
+				}
+				for _, peer := range peers {
+					if peer.ID == node.Host.ID() {
+						continue
+					}
+					pctx, cancel := context.WithTimeout(ctx, time.Second * 10)
+					defer cancel()
+					err := node.Host.Connect(pctx, peer)
+					if err != nil {
+						networklog.Warnf("connect peer failure: %s \n", peer)
+						cancel()
+						continue
+					} else {
+						connectedCount++
+					}
+				}
+			}
+			if connectedCount >= maxpeers {
+				if !notify {
+					peerok <-struct{}{}
+					notify = true
+				}
+			} else {
+				networklog.Infof("finding peers...")
+			}
+		}
+	}
+	return nil 
 }
