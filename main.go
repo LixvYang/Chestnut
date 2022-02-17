@@ -12,10 +12,12 @@ import (
 	ethkeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	dsbadger2 "github.com/ipfs/go-ds-badger2"
 	logging "github.com/ipfs/go-log/v2"
+	connmgr "github.com/libp2p/go-libp2p-connmgr"
 	localcrypto "github.com/lixvyang/chestnut/crypto"
 	"github.com/lixvyang/chestnut/p2p"
 	"github.com/lixvyang/chestnut/utils/cli"
 	"github.com/lixvyang/chestnut/utils/options"
+	"github.com/lixvyang/chestnut/storage"
 )
 
 const DEFAULT_KEY_NAME = "default"
@@ -35,6 +37,24 @@ func checkLockError(err error) {
 			os.Exit(16)
 		}
 	}
+}
+
+func createDb(path string) (*storage.Dbmgr, error) {
+	var err error
+	groupDb := storage.CSBadger{}
+	dataDb := storage.CSBadger{}
+	err = groupDb.Init(path)
+	if err != nil {
+		return nil, err
+	}
+
+	err = dataDb.Init(path)
+	if err != nil {
+		return nil, err
+	}
+
+	manager := storage.Dbmgr{&groupDb, &dataDb, nil, path}
+	return &manager, nil
 }
 
 // mainRet is the main function for the program. It is called from main.
@@ -173,6 +193,18 @@ func mainRet(config cli.Config) int {
 	}
 
 	if config.IsBootstrap {
+		// bootstrop node connections: low watermarks: 1000 high watermarks 50000, grace 30s
+		connmanager, _ := connmgr.NewConnManager(1000, 50000)
+		node, err := p2p.NewNode(ctx, nodeoptions, config.IsBootstrap, ds, defaultkey, connmanager, config.ListenAddresses, config.JsonTracer)
+		if err != nil {
+			mainlog.Fatalf(err.Error())
+		}
+		datapath := config.DataDir + "/" + config.PeerName
+		
+		dbManager, err := createDb(datapath)
+		if err != nil {
+			mainlog.Fatalf(err.Error())
+		}
 		
 	}
 
