@@ -18,11 +18,15 @@ import (
 	"github.com/lixvyang/chestnut/utils/cli"
 	"github.com/lixvyang/chestnut/utils/options"
 	"github.com/lixvyang/chestnut/storage"
+	"github.com/lixvyang/chestnut/nodectx"
+	"github.com/lixvyang/chestnut/api"
 )
 
 const DEFAULT_KEY_NAME = "default"
 
 var (
+	ReleaseVersion string
+	GitCommit      string
 	node *p2p.Node
 	signalch chan os.Signal
 	mainlog      = logging.Logger("main")
@@ -205,6 +209,14 @@ func mainRet(config cli.Config) int {
 		if err != nil {
 			mainlog.Fatalf(err.Error())
 		}
+
+		nodectx.InitCtx(ctx, "", node, dbManager, "pubsub", GitCommit)
+		nodectx.GetNodeCtx().Keystore = ksi
+		nodectx.GetNodeCtx().PublickKey = keys.PubKey
+		nodectx.GetNodeCtx().PeerId = peerid
+
+		mainlog.Infof("Host created, ID:<%s>, Address:<%s>", node.Host.ID(), node.Host.Addrs())
+		h := &api.Handler{Node: node, NodeCtx: nodectx.GetNodeCtx(), GitCommit: GitCommit}
 		
 	}
 
