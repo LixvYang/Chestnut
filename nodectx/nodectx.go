@@ -38,18 +38,18 @@ type NodeCtx struct {
 
 var (
 	nodeCtx *NodeCtx
-	dbMgr *storage.Dbmgr
+	dbMgr *storage.DbMgr
 )
 
 func GetNodeCtx() *NodeCtx {
 	return nodeCtx
 }
 
-func GerDbMgr() *storage.Dbmgr {
+func GerDbMgr() *storage.DbMgr {
 	return dbMgr
 }
 
-func InitCtx(ctx context.Context, name string, node *p2p.Node, db *storage.Dbmgr, channeltype string, gitcommit string)  {
+func InitCtx(ctx context.Context, name string, node *p2p.Node, db *storage.DbMgr, channeltype string, gitcommit string)  {
 	nodeCtx := &NodeCtx{}
 	nodeCtx.Ctx = ctx
 	nodeCtx.Node = node
