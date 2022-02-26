@@ -43,7 +43,7 @@ func checkLockError(err error) {
 	}
 }
 
-func createDb(path string) (*storage.Dbmgr, error) {
+func createDb(path string) (*storage.DbMgr, error) {
 	var err error
 	groupDb := storage.CSBadger{}
 	dataDb := storage.CSBadger{}
@@ -57,7 +57,7 @@ func createDb(path string) (*storage.Dbmgr, error) {
 		return nil, err
 	}
 
-	manager := storage.Dbmgr{&groupDb, &dataDb, nil, path}
+	manager := storage.DbMgr{&groupDb, &dataDb, nil, path}
 	return &manager, nil
 }
 
