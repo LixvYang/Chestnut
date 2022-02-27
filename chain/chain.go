@@ -287,20 +287,20 @@ func (chain *Chain) UpdProducerList()  {
 
 }
 
-// func (chain *Chain) CreateConsensus() {
-// 	chain_log.Debugf("<%s> CreateConsensus called", chain.groupId)
-// 	if _, ok := chain.ProducerPool[chain.group.Item.UserSignPubkey]; ok {
-// 		//Yes, I am producer, create group producer/user
-// 		chain_log.Infof("<%s> Create and initial molasses producer/user", chain.groupId)
-// 		chain.Consensus = NewMolasses(&MolassesProducer{}, &MolassesUser{})
-// 		chain.Consensus.Producer().Init(chain.group.Item, chain.group.ChainCtx.nodename, chain)
-// 		chain.Consensus.User().Init(chain.group.Item, chain.group.ChainCtx.nodename, chain)
-// 	} else {
-// 		chain_log.Infof("<%s> Create and initial molasses user", chain.groupId)
-// 		chain.Consensus = NewMolasses(nil, &MolassesUser{})
-// 		chain.Consensus.User().Init(chain.group.Item, chain.group.ChainCtx.nodename, chain)
-// 	}
-// }
+func (chain *Chain) CreateConsensus() {
+	chain_log.Debugf("<%s> CreateConsensus called", chain.groupId)
+	if _, ok := chain.ProducerPool[chain.group.Item.UserSignPubkey]; ok {
+		//Yes, I am producer, create group producer/user
+		chain_log.Infof("<%s> Create and initial molasses producer/user", chain.groupId)
+		chain.Consensus = NewMolasses(&MolassesProducer{}, &MolassesUser{})
+		chain.Consensus.Producer().Init(chain.group.Item, chain.group.ChainCtx.nodename, chain)
+		chain.Consensus.User().Init(chain.group.Item, chain.group.ChainCtx.nodename, chain)
+	} else {
+		chain_log.Infof("<%s> Create and initial molasses user", chain.groupId)
+		chain.Consensus = NewMolasses(nil, &MolassesUser{})
+		chain.Consensus.User().Init(chain.group.Item, chain.group.ChainCtx.nodename, chain)
+	}
+}
 
 
 func (chain *Chain) IsSyncerReady() bool {
