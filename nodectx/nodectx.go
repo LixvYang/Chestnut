@@ -45,7 +45,7 @@ func GetNodeCtx() *NodeCtx {
 	return nodeCtx
 }
 
-func GerDbMgr() *storage.DbMgr {
+func GetDbMgr() *storage.DbMgr {
 	return dbMgr
 }
 

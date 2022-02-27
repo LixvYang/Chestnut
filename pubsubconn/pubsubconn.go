@@ -10,7 +10,7 @@ type Chain interface {
 	HandleBlock(block *chestnutpb.Block) error
 }
 
-type PubsubConn interface {
+type PubSubConn interface {
 	JoinChannel(cId string, chain Chain) error
-	Pubsub(data []byte) error
+	Publish(data []byte) error
 }
