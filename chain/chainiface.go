@@ -7,7 +7,7 @@ import (
 
 type ChainMolassesIface interface {
 	GetUserTrxMgr() *TrxMgr
-	GerProducerTrxMgr() *TrxMgr
+	GetProducerTrxMgr() *TrxMgr
 	UpdChainInfo(height int64, blockId string) error
 	UpdProducerList()
 	CreateConsensus()
