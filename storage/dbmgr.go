@@ -614,7 +614,9 @@ func (dbMgr *DbMgr) AddProducer(item *chestnutpb.ProducerItem, prefix ...string)
 	return dbMgr.Db.Set([]byte(key), pbyte)
 }
 
-func (dbMgr *DbMgr) AddProduceBlockCount(groupId, producerPubkey string, prefix ...string) error {
+
+
+func (dbMgr *DbMgr) AddProducedBlockCount(groupId, producerPubkey string, prefix ...string) error {
 	nodeprefix := getPrefix(prefix...)
 	key := nodeprefix + PRD_PREFIX + "_" + groupId + "_" + producerPubkey
 	var pProducer *chestnutpb.ProducerItem
@@ -637,7 +639,7 @@ func (dbMgr *DbMgr) AddProduceBlockCount(groupId, producerPubkey string, prefix 
 	return dbMgr.Db.Set([]byte(key), value)
 }
 
-func (dbMgr *DbMgr) GerProducers(groupId string, prefix ...string) ([]*chestnutpb.ProducerItem, error) {
+func (dbMgr *DbMgr) GetProducers(groupId string, prefix ...string) ([]*chestnutpb.ProducerItem, error) {
 	var pList []*chestnutpb.ProducerItem
 	nodeprefix := getPrefix(prefix...)
 	key := nodeprefix + PRD_PREFIX + "_" + groupId
