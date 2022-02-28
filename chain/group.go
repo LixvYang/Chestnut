@@ -46,7 +46,7 @@ func (grp *Group) TearDown() {
 	group_log.Infof("Group <%s> teardown", grp.Item.GroupId)
 }
 
-func (grp *Group) GreateGrp(item *chestnutpb.GroupItem) error {
+func (grp *Group) CreateGrp(item *chestnutpb.GroupItem) error {
 	group_log.Debugf("<%s> GreateGrp called", item.GroupId)
 	grp.Init(item)
 
@@ -146,6 +146,24 @@ func (grp *Group) clearGroup() error {
 	//remove all group schema
 
 	return nil
+}
+
+
+
+func (grp *Group) StartSync() error {
+	group_log.Debugf("<%s> StartSync called", grp.Item.GroupId)
+	if grp.ChainCtx.Syncer.Status == SYNCING_BACKWARD || grp.ChainCtx.Syncer.Status == SYNCING_FORWARD {
+		return errors.New("Group is syncing, don't start again")
+	}
+
+	higestBId := grp.ChainCtx.group.Item.HighestBlockId
+	topBlock, err := nodectx.GetDbMgr().GetBlock(higestBId, false, grp.ChainCtx.nodename)
+	if err != nil {
+		group_log.Warningf("Get top block error, blockId <%s> at <%s>, <%s>", higestBId, grp.ChainCtx.nodename, err.Error())
+		return err
+	}
+
+	return grp.ChainCtx.StartInitialSync(topBlock)
 }
 
 func (grp *Group) StopSync() error {
