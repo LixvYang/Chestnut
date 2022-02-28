@@ -31,8 +31,9 @@ func StartAPIServer(config cli.Config, signalch chan os.Signal,h *Handler, apph 
 		r.POST("v1/group", h.CreateGroup)
 		r.DELETE("v1/group", h.RmGroup)
 		r.POST("v1/group/join", h.JoinGroup)
+		r.POST("v1/group/leave", h.LeaveGroup)
+		r.POST("v1/group/content", h.PostToGroup)
 
-		
 	}
 
 	e.Logger.Fatal(e.Start(config.APIListenAddresses))
