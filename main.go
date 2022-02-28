@@ -72,7 +72,7 @@ func mainRet(config cli.Config) int {
 		peername = "bootstrap"
 	}
 
-	nodeoptions, err := options.GetNodeOptions(config.ConfigDir, peername)
+	nodeoptions, err := options.InitNodeOptions(config.ConfigDir, peername)
 	if err != nil {
 		cancel()
 		mainlog.Fatalf(err.Error())
@@ -217,7 +217,7 @@ func mainRet(config cli.Config) int {
 
 		mainlog.Infof("Host created, ID:<%s>, Address:<%s>", node.Host.ID(), node.Host.Addrs())
 		h := &api.Handler{Node: node, NodeCtx: nodectx.GetNodeCtx(), GitCommit: GitCommit}
-		
+		go api.StartAPIServer(config, signalch, h, nil, node, nodeoptions, ks, ethaddr, true)
 	}
 
 
