@@ -46,7 +46,7 @@ func (grp *Group) TearDown() {
 	group_log.Infof("Group <%s> teardown", grp.Item.GroupId)
 }
 
-func (grp *Group) GreateGrp(item *chestnutpb.GroupItem) error {
+func (grp *Group) CreateGrp(item *chestnutpb.GroupItem) error {
 	group_log.Debugf("<%s> GreateGrp called", item.GroupId)
 	grp.Init(item)
 

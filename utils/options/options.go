@@ -34,7 +34,11 @@ const defaultNetworkName = "nevis"
 const defaultMaxPeers = 8
 const defaultConnsHi = 100
 
-func GetNodeOptions(configdir, peername string) (*NodeOptions, error) {
+func GetNodeOptions() *NodeOptions {
+	return nodeoptions
+}
+
+func InitNodeOptions(configdir, peername string) (*NodeOptions, error) {
 	var err error
 	nodeoptions, err = load(configdir, peername)
 	if err == nil {
