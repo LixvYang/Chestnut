@@ -38,15 +38,7 @@ func updateNodeStatus(nodenetworkname string) {
 }
 
 
-// Swager:route Get	/api/node/info NodeInfo
-// Get Node info
-// @Summary Get Node info
-// @Description Get Node info
-// @Success 200 {object} map[string]interface{}
-// info:
-//	description: node info
-// 	type: object
-// 	version：0.0.1
+
 func (h *Handler) GetNodeInfo(c echo.Context) (err error) {
 	
 	// nodeopt *options.NodeOptions
