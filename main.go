@@ -10,6 +10,7 @@ import (
 	"path"
 	"strings"
 	"syscall"
+	"time"
 
 	ethkeystore "github.com/ethereum/go-ethereum/accounts/keystore"
 	dsbadger2 "github.com/ipfs/go-ds-badger2"
@@ -218,7 +219,7 @@ func mainRet(config cli.Config) int {
 
 	if config.IsBootstrap {
 		// bootstrop node connections: low watermarks: 1000 high watermarks 50000, grace 30s
-		connmanager, _ := connmgr.NewConnManager(1000, 50000)
+		connmanager, _ := connmgr.NewConnManager(1000, 50000, connmgr.WithGracePeriod(60*time.Second))
 		node, err := p2p.NewNode(ctx, nodeoptions, config.IsBootstrap, ds, defaultkey, connmanager, config.ListenAddresses, config.JsonTracer)
 		if err != nil {
 			mainlog.Fatalf(err.Error())
