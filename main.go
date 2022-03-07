@@ -219,7 +219,7 @@ func mainRet(config cli.Config) int {
 
 	if config.IsBootstrap {
 		// bootstrop node connections: low watermarks: 1000 high watermarks 50000, grace 30s
-		connmanager, _ := connmgr.NewConnManager(1000, 50000, connmgr.WithGracePeriod(60*time.Second))
+		connmanager, _ := connmgr.NewConnManager(1000, 50000, connmgr.WithGracePeriod(30 * time.Second), connmgr.WithEmergencyTrim(true))
 		node, err := p2p.NewNode(ctx, nodeoptions, config.IsBootstrap, ds, defaultkey, connmanager, config.ListenAddresses, config.JsonTracer)
 		if err != nil {
 			mainlog.Fatalf(err.Error())
@@ -241,7 +241,7 @@ func mainRet(config cli.Config) int {
 		go api.StartAPIServer(config, signalch, h, nil, node, nodeoptions, ks, ethaddr, true)
 	} else {
 		//normal node connections: low watermarks: 10  hi watermarks 200, grace 60s
-		connmanager, _ := connmgr.NewConnManager(10, 200)
+		connmanager, _ := connmgr.NewConnManager(10, 200, connmgr.WithGracePeriod(60 * time.Second), connmgr.WithEmergencyTrim(true))
 		node, err = p2p.NewNode(ctx, nodeoptions, config.IsBootstrap, ds, defaultkey, connmanager, config.ListenAddresses, config.JsonTracer)
 		_ = node.Bootstrap(ctx, config)
 
