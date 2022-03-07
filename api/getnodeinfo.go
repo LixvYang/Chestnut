@@ -37,6 +37,8 @@ func updateNodeStatus(nodenetworkname string) {
 	}
 }
 
+
+
 func (h *Handler) GetNodeInfo(c echo.Context) (err error) {
 	
 	// nodeopt *options.NodeOptions
