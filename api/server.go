@@ -15,6 +15,7 @@ import (
 	"github.com/lixvyang/chestnut/utils/cli"
 	"github.com/lixvyang/chestnut/utils/options"
 	"google.golang.org/protobuf/encoding/protojson"
+	"github.com/lixvyang/chestnut/api/sd"
 )
 
 var quitch chan os.Signal
@@ -25,7 +26,16 @@ func StartAPIServer(config cli.Config, signalch chan os.Signal,h *Handler, apph 
 	e.Binder = new(CustomBinder)
 	r := e.Group("api")
 	a := e.Group("app/api")
+	s := e.Group("sd")
 	r.GET("/quit", quitapp)
+	// Check sd info.
+	s.GET("/heath", sd.HealthCheck())
+	s.GET("/disk", sd.DiskCheck())
+	s.GET("/cpu", sd.CPUCheck())
+	s.GET("/ram", sd.RAMCheck())
+	s.GET("net",sd.NetCheck())
+	s.GET("/host",sd.HostCheck())
+	
 	if !isbootstrapnode {
 		r.GET("v1/node", h.GetNodeInfo)
 		r.POST("v1/group", h.CreateGroup)
@@ -51,6 +61,8 @@ func StartAPIServer(config cli.Config, signalch chan os.Signal,h *Handler, apph 
 		r.GET("/v1/group/:group_id/announced/users", h.GetAnnouncedGroupUsers)
 		r.GET("/v1/group/:group_id/announced/producers", h.GetAnnouncedGroupProducer)
 		r.GET("/v1/group/:group_id/app/schema", h.GetGroupAppSchema)
+
+		
 
 		a.POST("/v1/group/:group_id/content", apph.ContentByPeers)
 		// a.POST("/v1/token/apply", apph.ApplyToken)
