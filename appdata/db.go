@@ -3,14 +3,15 @@ package appdata
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 
 	"github.com/dgraph-io/badger/v3"
-	logging "github.com/ipfs/go-log/v2"
-	"github.com/lixvyang/chestnut/storage"
-	chestnutpb "github.com/lixvyang/chestnut/pb"
 	"github.com/google/orderedcode"
+	logging "github.com/ipfs/go-log/v2"
+	chestnutpb "github.com/lixvyang/chestnut/pb"
+	"github.com/lixvyang/chestnut/storage"
 )
 
 type AppDb struct {
@@ -27,6 +28,7 @@ const (
 	SDR_PREFIX string = "sdr_"
 	SEQ_PREFIX string = "seq_"
 	TRX_PREFIX string = "trx_"
+	SED_PREFIX string = "sed_"
 	STATUS_PREFIX string = "stu_"
 	term = "\x00\x01"
 )
@@ -169,6 +171,20 @@ func (appdb *AppDb) Release() error {
 func (appdb *AppDb) Close() {
 	appdb.Release()
 	appdb.Db.Close()
+}
+
+func (appdb *AppDb) SetGroupSeed(seed *chestnutpb.GroupSeed) error {
+	key := groupSeedKey(seed.GroupId)
+
+	value, err := json.Marshal(seed)
+	if err != nil {
+		return err
+	}
+	return appdb.Db.Set(key, value)
+}
+
+func groupSeedKey(groupID string) []byte {
+	return []byte(fmt.Sprintf("%s%s", SED_PREFIX, groupID))
 }
 
 
