@@ -93,7 +93,9 @@ func NewNode(ctx context.Context, nodeopt *options.NodeOptions, isBootstrap bool
 		networklog.Infof("NAT enabled")
 	}
 
-	host, err := libp2p.New(libp2poptions...)
+	host, err := libp2p.New(
+		libp2poptions...,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -101,8 +103,8 @@ func NewNode(ctx context.Context, nodeopt *options.NodeOptions, isBootstrap bool
 	//config our own ping protocol
 	pingService := &PingService{Host: host}
 	host.SetStreamHandler(PingID, pingService.PingHandler)
-
-	options := []pubsub.Option{pubsub.WithPeerExchange(true)}
+	pubsubblocklist := pubsub.NewMapBlacklist()
+	options := []pubsub.Option{pubsub.WithPeerExchange(true), pubsub.WithBlacklist(pubsubblocklist), pubsub.WithPeerExchange(true)}
 
 	networklog.Infof("Network Name: %s", nodenetworkname)
 
