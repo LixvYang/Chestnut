@@ -116,6 +116,11 @@ func mainRet(config cli.Config) int {
 	if signkeycount > 0 {
 		if password == "" {
 			password, err = localcrypto.PassphrasePromptForUnlock()
+			if err != nil {
+				cancel()
+				mainlog.Errorf(err.Error())
+				return 0
+			}
 		}
 		err = ks.Unlock(nodeoptions.SignKeyMap, password)
 		if err != nil {
@@ -146,6 +151,11 @@ func mainRet(config cli.Config) int {
 		var addr string
 		if signkeyhexstr != "" {
 			addr, err = ks.Import(DEFAULT_KEY_NAME, signkeyhexstr, localcrypto.Sign, password)
+			if err != nil {
+				cancel()
+				mainlog.Errorf(err.Error())
+				return 0
+			}
 		} else {
 			addr, err = ks.NewKey(DEFAULT_KEY_NAME, localcrypto.Sign, password)
 			if err != nil {
@@ -176,6 +186,7 @@ func mainRet(config cli.Config) int {
 
 		fmt.Printf("load signkey: %d press any key to continue...\n", signkeycount)
 	}
+
 	_, err = ks.GetKeyFromUnlocked(localcrypto.Sign.NameString(DEFAULT_KEY_NAME))
 	signkeycount = ks.UnlockedKeyCount(localcrypto.Sign)
 	if signkeycount == 0 {
@@ -195,6 +206,7 @@ func mainRet(config cli.Config) int {
 		return 0
 	}
 
+	// config key type 
 	keys, err := localcrypto.SignKeytoPeerKeys(defaultkey)
 	if err != nil {
 		cancel()
@@ -224,8 +236,8 @@ func mainRet(config cli.Config) int {
 		if err != nil {
 			mainlog.Fatalf(err.Error())
 		}
-		datapath := config.DataDir + "/" + config.PeerName
 		
+		datapath := config.DataDir + "/" + config.PeerName
 		dbManager, err := createDb(datapath)
 		if err != nil {
 			mainlog.Fatalf(err.Error())
@@ -252,7 +264,7 @@ func mainRet(config cli.Config) int {
 
 		//Discovery and Advertise had been replaced by PeerExchange
 		mainlog.Infof("Announcing ourselves...")
-		discovery.Advertise(ctx, node.RoutingDiscovery, config.RendezvousString)
+		go discovery.Advertise(ctx, node.RoutingDiscovery, config.RendezvousString)
 		mainlog.Infof("Successfully announced!")
 		peerok := make(chan struct{})
 

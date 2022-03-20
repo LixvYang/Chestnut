@@ -14,6 +14,7 @@ type LazyScryptIdentity struct {
 	Password string
 }
 
+// AgeEncrypt func
 func AgeEncrypt(recipients []age.Recipient, in io.Reader, out io.Writer) error {
 	w, err := age.Encrypt(out, recipients...)
 	if err != nil {
@@ -27,6 +28,7 @@ func AgeEncrypt(recipients []age.Recipient, in io.Reader, out io.Writer) error {
 	}
 	return err
 }
+
 
 func (i *LazyScryptIdentity) Unwrap(stanzas []*age.Stanza) (fileKey []byte, err error) {
 	for _, s := range stanzas {

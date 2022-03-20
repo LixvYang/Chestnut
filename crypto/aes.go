@@ -14,6 +14,7 @@ func CreateAesKey() ([]byte, error) {
 	return key, err
 }
 
+// AesEncrypt func
 func AesEncrypt(data, key []byte) ([]byte, error) {
 	cphr, err := aes.NewCipher(key)
 	if err != nil {
@@ -32,7 +33,7 @@ func AesEncrypt(data, key []byte) ([]byte, error) {
 	return gcm.Seal(nonce, nonce, data, nil), nil
 }
 
-
+// AesDecode func
 func AesDecode(data, key []byte) ([]byte, error) {
 	c, err := aes.NewCipher(key)
 	if err != nil {
