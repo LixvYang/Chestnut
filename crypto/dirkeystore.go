@@ -49,6 +49,10 @@ func InitDirKeyStore(name, keydir string) (*DirKeyStore, int, error) {
 
 	signkeycount := 0
 	files, err := ioutil.ReadDir(keydir)
+	if err != nil {
+		return nil, 0, err
+	}
+	
 	for _, f := range files {
 		if strings.HasPrefix(f.Name(), Sign.Prefix()) {
 			signkeycount++
