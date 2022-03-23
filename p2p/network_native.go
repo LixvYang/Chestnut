@@ -192,6 +192,7 @@ func (node *Node) Bootstrap(ctx context.Context, config cli.Config) error {
 	return nil
 }
 
+// AddPeers adds a list of peers to the node's peerstore.
 func (node *Node) ConnectPeers(ctx context.Context, peerok chan struct{}, maxpeers int, config cli.Config) error {
 	notify := false
 	ticker := time.NewTicker(time.Second * 30)
@@ -204,7 +205,7 @@ func (node *Node) ConnectPeers(ctx context.Context, peerok chan struct{}, maxpee
 		case <- ticker.C:
 			//TODO: check peers status and max connect peers
 			connectedCount := 0
-			if notify {
+			if !notify {
 				peers, err := node.FindPeers(ctx, config.RendezvousString) 
 				if err != nil {
 					return err
@@ -235,5 +236,4 @@ func (node *Node) ConnectPeers(ctx context.Context, peerok chan struct{}, maxpee
 			}
 		}
 	}
-	return nil 
 }

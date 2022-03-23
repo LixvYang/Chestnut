@@ -85,7 +85,7 @@ func ParseFlags() (Config, error) {
 	config := &Config{}
 	protocol := "/chestnut/1.0.0"
 	config.ProtocolID = protocol
-	flag.StringVar(&config.RendezvousString, "rendezvous", "e6629921-b5cd-4855-9fcd-08bcc39caef7", //e6629921-b5cd-4855-9fcd-08bcc39caef7 default quorum rendezvous
+	flag.StringVar(&config.RendezvousString, "rendezvous", "e6629921-b5cd-4855-9fcd-08bcc39caef7", //e6629921-b5cd-4855-9fcd-08bcc39caef7 default chestnut rendezvous
 		"Unique string to identify group of nodes. Share this with your friends to let them connect with you")
 	flag.Var(&config.BootstrapPeers, "peer", "Adds a peer multiaddress to the bootstrap list")
 	flag.Var(&config.ListenAddresses, "listen", "Adds a multiaddress to the listen list, e.g.: `-listen /ip4/127.0.0.1/tcp/4215 -listen /ip/127.0.0.1/tcp/5215/ws`")

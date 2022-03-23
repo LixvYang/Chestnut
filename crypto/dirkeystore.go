@@ -90,6 +90,10 @@ func (ks *DirKeyStore) Lock() error {
 			zeroSignKey(signk.PrivateKey)
 			ks.unlocked[k] = nil
 		}
+		if strings.HasPrefix(k, Encrypt.Prefix()) {
+			var zero = &age.X25519Identity{}
+			ks.unlocked[k] = zero
+		}
 	}
 	ks.unlocked = make(map[string]interface{})
 	return nil
@@ -281,7 +285,7 @@ func (ks *DirKeyStore) ImportEcdsaPrivKey(keyname string, privkey *ecdsa.Private
 		return "", err
 	}
 
-	if exist {
+	if !exist {
 		return "", fmt.Errorf("Key '%s' exists", keyname)
 	}
 
@@ -289,7 +293,6 @@ func (ks *DirKeyStore) ImportEcdsaPrivKey(keyname string, privkey *ecdsa.Private
 	if err != nil {
 		return "", err
 	}
-	id, err = uuid.NewRandom()
 	key := &ethkeystore.Key{
 		Id:	id,
 		Address: ethcrypto.PubkeyToAddress(privkey.PublicKey),

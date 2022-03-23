@@ -38,7 +38,12 @@ func updateNodeStatus(nodenetworkname string) {
 }
 
 
-
+// @Tags Node
+// @Summary GetNodeInfo
+// @Description Return the node info
+// @Produce json
+// @Success 200 {object} NodeInfo
+// @Router /api/v1/node [get]
 func (h *Handler) GetNodeInfo(c echo.Context) (err error) {
 	
 	// nodeopt *options.NodeOptions

@@ -51,7 +51,7 @@ func (groupmgr *GroupMgr) SyncAllGroup() error {
 		group.Init(item)
 		if err == nil {
 			groupMgr_log.Debugf("Start sync group: %s", item.GroupId)
-			go group.StopSync()
+			go group.StartSync()
 			groupmgr.Groups[item.GroupId] = group
 		} else {
 			groupMgr_log.Fatalf("can't sync group: %s", item.GroupId)
