@@ -38,42 +38,38 @@ func StartAPIServer(config cli.Config, signalch chan os.Signal,h *Handler, apph 
 	
 	if !isbootstrapnode {
 		go r.GET("v1/node", h.GetNodeInfo)
-		r.POST("v1/group", h.CreateGroup)
-		r.DELETE("v1/group", h.RmGroup)
-		r.POST("v1/group/join", h.JoinGroup)
-		r.POST("v1/group/leave", h.LeaveGroup)
-		r.POST("v1/group/content", h.PostToGroup)
-		r.POST("v1/group/profile", h.UpdateProfile)
-		r.POST("v1/network/peers", h.AddPeers)	
-		r.POST("/v1/group/deniedlist", h.MgrGrpBlkList)
-		r.POST("v1/group/producer", h.GroupProducer)
-		r.POST("v1/group/announce", h.Announce)
-		r.POST("/v1/group/schema", h.Schema)
-		r.POST("/v1/group/:group_id/startsync", h.StartSync)
-		r.GET("v1/network", h.GetNetwork(&node.Host, node.Info, nodeopt, ethaddr))
-		r.POST("/v1/psping", h.PSPingPeer(node))
-		r.GET("/v1/block/:group_id/:block_id", h.GetBlockById)
-		r.GET("/v1/trx/:group_id/:trx_id", h.GetTrx)
-		r.GET("/v1/groups", h.GetGroups)
-		r.GET("/v1/group/:group_id/content", h.GetGroupCtn)
-		r.GET("/v1/group/:group_id/deniedlist", h.GetDeniedUserList)
-		r.GET("/v1/group/:group_id/producers", h.GetGroupProducers)
-		r.GET("/v1/group/:group_id/announced/users", h.GetAnnouncedGroupUsers)
-		r.GET("/v1/group/:group_id/announced/producers", h.GetAnnouncedGroupProducer)
-		r.GET("/v1/group/:group_id/app/schema", h.GetGroupAppSchema)
-
-		
-
-		a.POST("/v1/group/:group_id/content", apph.ContentByPeers)
+	  go r.POST("v1/group", h.CreateGroup)
+	  go r.POST("v1/group", h.CreateGroup)
+	  go r.DELETE("v1/group", h.RmGroup)
+	  go r.POST("v1/group/join", h.JoinGroup)
+	  go r.POST("v1/group/leave", h.LeaveGroup)
+	  go r.POST("v1/group/content", h.PostToGroup)
+	  go r.POST("v1/group/profile", h.UpdateProfile)
+	  go r.POST("v1/network/peers", h.AddPeers)	
+	  go r.POST("/v1/group/deniedlist", h.MgrGrpBlkList)
+	  go r.POST("v1/group/producer", h.GroupProducer)
+	  go r.POST("v1/group/announce", h.Announce)
+	  go r.POST("/v1/group/schema", h.Schema)
+	  go r.POST("/v1/group/:group_id/startsync", h.StartSync)
+	  go r.GET("v1/network", h.GetNetwork(&node.Host, node.Info, nodeopt, ethaddr))
+	  go r.POST("/v1/psping", h.PSPingPeer(node))
+	  go r.GET("/v1/block/:group_id/:block_id", h.GetBlockById)
+	  go r.GET("/v1/trx/:group_id/:trx_id", h.GetTrx)
+	  go r.GET("/v1/groups", h.GetGroups)
+	  go r.GET("/v1/group/:group_id/content", h.GetGroupCtn)
+	  go r.GET("/v1/group/:group_id/deniedlist", h.GetDeniedUserList)
+	  go r.GET("/v1/group/:group_id/producers", h.GetGroupProducers)
+	  go r.GET("/v1/group/:group_id/announced/users", h.GetAnnouncedGroupUsers)
+	  go r.GET("/v1/group/:group_id/announced/producers", h.GetAnnouncedGroupProducer)
+	  go r.GET("/v1/group/:group_id/app/schema", h.GetGroupAppSchema)
+		 
+		go a.POST("/v1/group/:group_id/content", apph.ContentByPeers)
 		// a.POST("/v1/token/apply", apph.ApplyToken)
 		// a.POST("/v1/token/refresh", apph.RefreshToken)
-
 	}
 
 	e.Logger.Fatal(e.Start(config.APIListenAddresses))
 }
-
-
 
 type CustomBinder struct{}
 
