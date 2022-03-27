@@ -1,6 +1,6 @@
 # Heterogeneous Solutions for the Internet.
 
-![](chestnut.png)
+![](chestnut_arch.png)
 
 ## Build
 ```go

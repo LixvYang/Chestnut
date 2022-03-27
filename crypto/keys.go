@@ -46,17 +46,17 @@ func LoadEncodeKeyFrom(dir, keyname, filetype string) (string, error) {
 }
 
 func SignKeytoPeerKeys(key *ethkeystore.Key) (*Key, error) {
+	println("开始进入公钥密钥")
 	ethprivkey := key.PrivateKey
 	privkeybytes := ethcrypto.FromECDSA(ethprivkey)
 	pubkeybytes := ethcrypto.FromECDSAPub(&ethprivkey.PublicKey)
 
 	priv, err := p2pcrypto.UnmarshalECDSAPrivateKey(privkeybytes)
 	pub, err := p2pcrypto.UnmarshalECDSAPublicKey(pubkeybytes)
-
 	if err != nil {
 		return nil, err
 	}
-
+	println("公钥 密钥 完毕")
 	address := ethcrypto.PubkeyToAddress(ethprivkey.PublicKey).Hex()
 	return &Key{PrivKey: priv, PubKey: pub, EthAddr: address}, nil
 }
